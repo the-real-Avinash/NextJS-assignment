@@ -7,6 +7,8 @@ const Home = () => {
     const fetchTasks = async () => {
       const res = await fetch('/api/tasks');
       const data = await res.json();
+      console.log("Data", data);
+      
       setTasks(data.data);
     };
     fetchTasks();
