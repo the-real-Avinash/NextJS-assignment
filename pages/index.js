@@ -19,7 +19,7 @@ const Home = () => {
 
   const deleteTask = async (id) => {
     try {
-      await axios.delete(`/api/tasks?id=${id}`);
+      await axios.delete(`/api/${id}`); // Update URL structure to match your API route
       setTasks(tasks.filter((task) => task._id !== id));
     } catch (error) {
       console.error("Error deleting task:", error);

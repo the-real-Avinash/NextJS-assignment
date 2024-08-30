@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import axios from "axios";
 
 const NewTask = () => {
   const [form, setForm] = useState({
@@ -18,17 +19,51 @@ const NewTask = () => {
     });
   };
 
+  const getCoordinates = async (location) => {
+    try {
+      const response = await axios.get(
+        "https://nominatim.openstreetmap.org/search",
+        {
+          params: {
+            q: location,
+            format: "json",
+          },
+        }
+      );
+
+      if (response.data.length > 0) {
+        const { lat, lon } = response.data[0];
+        return { lat, lng: lon };
+      } else {
+        throw new Error("Location not found");
+      }
+    } catch (error) {
+      console.error("Error fetching coordinates:", error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await fetch("/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-      router.push("/");
+      const coords = await getCoordinates(form.location);
+      if (coords) {
+        const updatedForm = {
+          ...form,
+          location: {
+            name: form.location,
+            latitude: parseFloat(coords.lat), // Ensure values are of the correct type
+            longitude: parseFloat(coords.lng),
+          },
+        };
+        await fetch("/api/tasks", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedForm),
+        });
+        router.push("/");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -114,7 +149,7 @@ const NewTask = () => {
           <input
             type="text"
             name="location"
-            placeholder="Location (e.g., City or Coordinates)"
+            placeholder="Location (e.g., City Name)"
             value={form.location}
             onChange={handleChange}
             className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

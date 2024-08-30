@@ -40,7 +40,7 @@ const EditTask = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`/api/tasks?id=${id}`, form);
+      await axios.put(`/api/${id}`, form);
       router.push("/");
     } catch (error) {
       console.error("Error updating task:", error);
