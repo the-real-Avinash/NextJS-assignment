@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { Pie } from 'react-chartjs-2';
+import { useState, useEffect } from "react";
+import { Pie } from "react-chartjs-2";
 
 const Dashboard = () => {
   const [chartData, setChartData] = useState({});
 
   useEffect(() => {
     const fetchTasks = async () => {
-      const res = await fetch('/api/tasks');
+      const res = await fetch("/api/tasks");
       const data = await res.json();
       const taskData = data.data;
 
@@ -19,12 +19,12 @@ const Dashboard = () => {
       );
 
       setChartData({
-        labels: ['High', 'Medium', 'Low'],
+        labels: ["High", "Medium", "Low"],
         datasets: [
           {
-            label: 'Task Priority',
+            label: "Task Priority",
             data: [priorities.High, priorities.Medium, priorities.Low],
-            backgroundColor: ['red', 'yellow', 'green'],
+            backgroundColor: ["red", "yellow", "green"],
           },
         ],
       });

@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import axios from "axios";
 
-const NewTask = () => {
+const EditTask = () => {
+  const router = useRouter();
+  const { id } = router.query;
+
+  // Initialize form state with default values
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -9,7 +14,21 @@ const NewTask = () => {
     priority: "Low",
     location: "",
   });
-  const router = useRouter();
+
+  useEffect(() => {
+    // Fetch the task details when the component mounts
+    if (id) {
+      const fetchTask = async () => {
+        try {
+          const res = await axios.get(`/api/tasks?id=${id}`);
+          setForm(res.data.data);
+        } catch (error) {
+          console.error("Error fetching task:", error);
+        }
+      };
+      fetchTask();
+    }
+  }, [id]);
 
   const handleChange = (e) => {
     setForm({
@@ -21,22 +40,16 @@ const NewTask = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await fetch("/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+      await axios.put(`/api/tasks?id=${id}`, form);
       router.push("/");
     } catch (error) {
-      console.log(error);
+      console.error("Error updating task:", error);
     }
   };
 
   return (
     <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl font-bold mb-6 text-center">Add New Task</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">Edit Task</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="title" className="block text-gray-700 font-semibold">
@@ -124,11 +137,11 @@ const NewTask = () => {
           type="submit"
           className="w-full py-3 mt-4 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition duration-300"
         >
-          Add Task
+          Update Task
         </button>
       </form>
     </div>
   );
 };
 
-export default NewTask;
+export default EditTask;
