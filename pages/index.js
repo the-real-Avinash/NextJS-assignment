@@ -29,11 +29,18 @@ const Home = () => {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Task List</h1>
-      <Link href="/task/new">
-        <button className="bg-blue-500 text-white px-4 py-2 rounded mb-4">
-          Add Task
-        </button>
-      </Link>
+      <div className="flex justify-between mb-4">
+        <Link href="/task/new">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded">
+            Add Task
+          </button>
+        </Link>
+        <Link href="/dashboard">
+          <button className="bg-blue-500 text-white px-4 py-2 rounded">
+            Go To Dashboard
+          </button>
+        </Link>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {tasks.map((task) => (
           <div key={task._id} className="bg-white shadow-md rounded p-4">

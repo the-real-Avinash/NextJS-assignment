@@ -51,7 +51,7 @@ const NewTask = () => {
           ...form,
           location: {
             name: form.location,
-            latitude: parseFloat(coords.lat), // Ensure values are of the correct type
+            latitude: parseFloat(coords.lat),
             longitude: parseFloat(coords.lng),
           },
         };
@@ -70,11 +70,16 @@ const NewTask = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
-      <h1 className="text-2xl font-bold mb-6 text-center">Add New Task</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-lg mx-auto mt-10 p-8 bg-white shadow-xl rounded-lg">
+      <h1 className="text-3xl font-extrabold mb-8 text-center text-blue-600">
+        Add New Task
+      </h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="title" className="block text-gray-700 font-semibold">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700"
+          >
             Title
           </label>
           <input
@@ -84,13 +89,13 @@ const NewTask = () => {
             value={form.title}
             onChange={handleChange}
             required
-            className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <div>
           <label
             htmlFor="description"
-            className="block text-gray-700 font-semibold"
+            className="block text-sm font-medium text-gray-700"
           >
             Description
           </label>
@@ -100,14 +105,14 @@ const NewTask = () => {
             value={form.description}
             onChange={handleChange}
             required
-            className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             rows="4"
           ></textarea>
         </div>
         <div>
           <label
             htmlFor="dueDate"
-            className="block text-gray-700 font-semibold"
+            className="block text-sm font-medium text-gray-700"
           >
             Due Date
           </label>
@@ -117,13 +122,13 @@ const NewTask = () => {
             value={form.dueDate}
             onChange={handleChange}
             required
-            className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <div>
           <label
             htmlFor="priority"
-            className="block text-gray-700 font-semibold"
+            className="block text-sm font-medium text-gray-700"
           >
             Priority
           </label>
@@ -132,7 +137,7 @@ const NewTask = () => {
             value={form.priority}
             onChange={handleChange}
             required
-            className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           >
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
@@ -142,7 +147,7 @@ const NewTask = () => {
         <div>
           <label
             htmlFor="location"
-            className="block text-gray-700 font-semibold"
+            className="block text-sm font-medium text-gray-700"
           >
             Location
           </label>
@@ -152,12 +157,12 @@ const NewTask = () => {
             placeholder="Location (e.g., City Name)"
             value={form.location}
             onChange={handleChange}
-            className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
         <button
           type="submit"
-          className="w-full py-3 mt-4 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition duration-300"
+          className="w-full py-3 bg-blue-600 text-white font-bold rounded-md shadow-md hover:bg-blue-700 transition duration-300 ease-in-out"
         >
           Add Task
         </button>
