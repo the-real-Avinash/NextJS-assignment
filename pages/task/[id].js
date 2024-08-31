@@ -1,7 +1,9 @@
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTaskById, deleteTask } from "@/store/tasksSlice";
 import { format } from "date-fns";
 
 // Dynamically import Leaflet components
@@ -24,41 +26,33 @@ const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
 const TaskDetail = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [task, setTask] = useState(null);
+  const dispatch = useDispatch();
+  const task = useSelector((state) => state.tasks.selectedTask);
+  const taskStatus = useSelector((state) => state.tasks.status);
+  const error = useSelector((state) => state.tasks.error);
 
   useEffect(() => {
-    if (!id) return;
-
-    const fetchTask = async () => {
-      try {
-        const res = await fetch(`/api/${id}`);
-        if (res.ok) {
-          const data = await res.json();
-          setTask(data.data);
-        } else {
-          console.error("Error fetching task:", res.statusText);
-        }
-      } catch (error) {
-        console.error("Error fetching task:", error);
-      }
-    };
-
-    fetchTask();
-  }, [id]);
-
-  const deleteTask = async () => {
-    try {
-      await fetch(`/api/${id}`, {
-        method: "DELETE",
-      });
-      router.push("/");
-    } catch (error) {
-      console.error("Error deleting task:", error);
+    if (id) {
+      dispatch(fetchTaskById(id));
     }
+  }, [id, dispatch]);
+
+  const handleDelete = async () => {
+    await dispatch(deleteTask(id));
+    router.push("/");
   };
 
-  if (!task)
+  if (taskStatus === "loading") {
     return <div className="text-center mt-20 text-gray-500">Loading...</div>;
+  }
+
+  if (taskStatus === "failed") {
+    return <div className="text-center mt-20 text-red-500">Error: {error}</div>;
+  }
+
+  if (!task) {
+    return <div className="text-center mt-20 text-gray-500">No task found</div>;
+  }
 
   const { latitude, longitude } = task.location || {};
 
@@ -117,7 +111,7 @@ const TaskDetail = () => {
           </button>
         </Link>
         <button
-          onClick={deleteTask}
+          onClick={handleDelete}
           className="bg-red-500 text-white px-5 py-2 rounded-md hover:bg-red-600 transition duration-300"
         >
           Delete

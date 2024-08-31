@@ -1,29 +1,20 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
-import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchTasks, deleteTask } from "../store/tasksSlice";
 
 const Home = () => {
-  const [tasks, setTasks] = useState([]);
+  const dispatch = useDispatch();
+  const { tasks, status, error } = useSelector((state) => state.tasks);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const res = await axios.get("/api/tasks");
-        setTasks(res.data.data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
-    fetchTasks();
-  }, []);
-
-  const deleteTask = async (id) => {
-    try {
-      await axios.delete(`/api/${id}`); // Update URL structure to match your API route
-      setTasks(tasks.filter((task) => task._id !== id));
-    } catch (error) {
-      console.error("Error deleting task:", error);
+    if (status === "idle") {
+      dispatch(fetchTasks());
     }
+  }, [status, dispatch]);
+
+  const handleDelete = (id) => {
+    dispatch(deleteTask(id));
   };
 
   return (
@@ -41,30 +32,36 @@ const Home = () => {
           </button>
         </Link>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {tasks.map((task) => (
-          <div key={task._id} className="bg-white shadow-md rounded p-4">
-            <h2 className="text-xl font-semibold">{task.title}</h2>
-            <p className="text-gray-700">{task.description}</p>
-            <div className="mt-2 flex justify-between items-center">
-              <Link href={`/task/${task._id}`}>
-                <button className="text-blue-500">View</button>
-              </Link>
-              <div>
-                <Link href={`/task/edit/${task._id}`}>
-                  <button className="text-yellow-500 mr-2">Edit</button>
+      {status === "loading" && (
+        <p className="text-gray-500">Loading tasks...</p>
+      )}
+      {status === "failed" && <p className="text-red-500">Error: {error}</p>}
+      {status === "succeeded" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {tasks.map((task) => (
+            <div key={task._id} className="bg-white shadow-md rounded p-4">
+              <h2 className="text-xl font-semibold">{task.title}</h2>
+              <p className="text-gray-700">{task.description}</p>
+              <div className="mt-2 flex justify-between items-center">
+                <Link href={`/task/${task._id}`}>
+                  <button className="text-blue-500">View</button>
                 </Link>
-                <button
-                  onClick={() => deleteTask(task._id)}
-                  className="text-red-500"
-                >
-                  Delete
-                </button>
+                <div>
+                  <Link href={`/task/edit/${task._id}`}>
+                    <button className="text-yellow-500 mr-2">Edit</button>
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(task._id)}
+                    className="text-red-500"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

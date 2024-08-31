@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTaskById, updateTask } from "@/store/tasksSlice";
 
 const EditTask = () => {
   const router = useRouter();
   const { id } = router.query;
+  const dispatch = useDispatch();
 
-  // Initialize form state with default values
+  // Fetch the task details from the Redux store
+  const task = useSelector((state) => state.tasks.selectedTask);
+  const taskStatus = useSelector((state) => state.tasks.status);
+  const error = useSelector((state) => state.tasks.error);
+
+  // Initialize form state with task details
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -16,19 +23,22 @@ const EditTask = () => {
   });
 
   useEffect(() => {
-    // Fetch the task details when the component mounts
     if (id) {
-      const fetchTask = async () => {
-        try {
-          const res = await axios.get(`/api/tasks?id=${id}`);
-          setForm(res.data.data);
-        } catch (error) {
-          console.error("Error fetching task:", error);
-        }
-      };
-      fetchTask();
+      dispatch(fetchTaskById(id));
     }
-  }, [id]);
+  }, [id, dispatch]);
+
+  useEffect(() => {
+    if (task) {
+      setForm({
+        title: task.title || "",
+        description: task.description || "",
+        dueDate: task.dueDate || "",
+        priority: task.priority || "Low",
+        location: task.location || "",
+      });
+    }
+  }, [task]);
 
   const handleChange = (e) => {
     setForm({
@@ -40,12 +50,20 @@ const EditTask = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`/api/${id}`, form);
-      router.push("/");
+      await dispatch(updateTask({ id, updatedTask: form }));
+      router.push(`/`);
     } catch (error) {
       console.error("Error updating task:", error);
     }
   };
+
+  if (taskStatus === "loading") {
+    return <div className="text-center mt-20 text-gray-500">Loading...</div>;
+  }
+
+  if (taskStatus === "failed") {
+    return <div className="text-center mt-20 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">

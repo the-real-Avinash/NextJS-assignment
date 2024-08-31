@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { addNewTask } from "../../store/tasksSlice";
 import axios from "axios";
 
 const NewTask = () => {
@@ -10,6 +12,8 @@ const NewTask = () => {
     priority: "Low",
     location: "",
   });
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const handleChange = (e) => {
@@ -39,11 +43,13 @@ const NewTask = () => {
       }
     } catch (error) {
       console.error("Error fetching coordinates:", error);
+      throw error;
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const coords = await getCoordinates(form.location);
       if (coords) {
@@ -55,17 +61,15 @@ const NewTask = () => {
             longitude: parseFloat(coords.lng),
           },
         };
-        await fetch("/api/tasks", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedForm),
-        });
+        // Dispatch the addNewTask action
+        await dispatch(addNewTask(updatedForm)).unwrap();
         router.push("/");
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error adding task:", error);
+      // Optionally, set an error state here to display to the user
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,6 +79,7 @@ const NewTask = () => {
         Add New Task
       </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Title Field */}
         <div>
           <label
             htmlFor="title"
@@ -92,6 +97,7 @@ const NewTask = () => {
             className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
+        {/* Description Field */}
         <div>
           <label
             htmlFor="description"
@@ -109,6 +115,7 @@ const NewTask = () => {
             rows="4"
           ></textarea>
         </div>
+        {/* Due Date Field */}
         <div>
           <label
             htmlFor="dueDate"
@@ -125,6 +132,7 @@ const NewTask = () => {
             className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
+        {/* Priority Field */}
         <div>
           <label
             htmlFor="priority"
@@ -144,6 +152,7 @@ const NewTask = () => {
             <option value="High">High</option>
           </select>
         </div>
+        {/* Location Field */}
         <div>
           <label
             htmlFor="location"
@@ -160,11 +169,15 @@ const NewTask = () => {
             className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
+        {/* Submit Button */}
         <button
           type="submit"
-          className="w-full py-3 bg-blue-600 text-white font-bold rounded-md shadow-md hover:bg-blue-700 transition duration-300 ease-in-out"
+          disabled={loading}
+          className={`w-full py-3 bg-blue-600 text-white font-bold rounded-md shadow-md hover:bg-blue-700 transition duration-300 ease-in-out ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          Add Task
+          {loading ? "Adding..." : "Add Task"}
         </button>
       </form>
     </div>
