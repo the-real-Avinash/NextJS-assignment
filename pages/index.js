@@ -1,11 +1,16 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchTasks, deleteTask } from "../store/tasksSlice";
+import WarningModal from "./WarningModal";
 
 const Home = () => {
   const dispatch = useDispatch();
   const { tasks, status, error } = useSelector((state) => state.tasks);
+
+  // State for managing modal visibility and selected task to delete
+  const [showModal, setShowModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
 
   useEffect(() => {
     if (status === "idle") {
@@ -13,8 +18,22 @@ const Home = () => {
     }
   }, [status, dispatch]);
 
-  const handleDelete = (id) => {
-    dispatch(deleteTask(id));
+  const handleDelete = async () => {
+    if (taskToDelete) {
+      await dispatch(deleteTask(taskToDelete));
+      setTaskToDelete(null);
+      setShowModal(false);
+    }
+  };
+
+  const openModal = (id) => {
+    setTaskToDelete(id);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setTaskToDelete(null);
+    setShowModal(false);
   };
 
   return (
@@ -51,7 +70,7 @@ const Home = () => {
                     <button className="text-yellow-500 mr-2">Edit</button>
                   </Link>
                   <button
-                    onClick={() => handleDelete(task._id)}
+                    onClick={() => openModal(task._id)}
                     className="text-red-500"
                   >
                     Delete
@@ -62,6 +81,11 @@ const Home = () => {
           ))}
         </div>
       )}
+      <WarningModal
+        show={showModal}
+        onClose={closeModal}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 };

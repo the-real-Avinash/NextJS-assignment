@@ -1,10 +1,11 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTaskById, deleteTask } from "@/store/tasksSlice";
 import { format } from "date-fns";
+import WarningModal from "../WarningModal";
 
 // Dynamically import Leaflet components
 const MapContainer = dynamic(
@@ -30,6 +31,7 @@ const TaskDetail = () => {
   const task = useSelector((state) => state.tasks.selectedTask);
   const taskStatus = useSelector((state) => state.tasks.status);
   const error = useSelector((state) => state.tasks.error);
+  const [showModal, setShowModal] = useState(false); // State for modal visibility
 
   useEffect(() => {
     if (id) {
@@ -40,6 +42,19 @@ const TaskDetail = () => {
   const handleDelete = async () => {
     await dispatch(deleteTask(id));
     router.push("/");
+  };
+
+  const handleDeleteClick = () => {
+    setShowModal(true); // Show the modal when delete button is clicked
+  };
+
+  const handleConfirmDelete = () => {
+    handleDelete(); // Delete the task when Yes is clicked
+    setShowModal(false); // Close the modal
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false); // Close the modal when No is clicked
   };
 
   if (taskStatus === "loading") {
@@ -105,18 +120,25 @@ const TaskDetail = () => {
         )}
       </div>
       <div className="flex justify-between mt-6">
-        <Link href={`/tasks/edit/${task._id}`}>
+        <Link href={`/task/edit/${task._id}`}>
           <button className="bg-yellow-500 text-white px-5 py-2 rounded-md hover:bg-yellow-600 transition duration-300">
             Edit
           </button>
         </Link>
         <button
-          onClick={handleDelete}
+          onClick={handleDeleteClick} // Trigger modal on delete click
           className="bg-red-500 text-white px-5 py-2 rounded-md hover:bg-red-600 transition duration-300"
         >
           Delete
         </button>
       </div>
+
+      {/* Warning Modal */}
+      <WarningModal
+        show={showModal}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };
