@@ -11,6 +11,7 @@ const NewTask = () => {
     dueDate: "",
     priority: "Low",
     location: "",
+    status: "pending",
   });
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
@@ -61,13 +62,11 @@ const NewTask = () => {
             longitude: parseFloat(coords.lng),
           },
         };
-        // Dispatch the addNewTask action
         await dispatch(addNewTask(updatedForm)).unwrap();
         router.push("/");
       }
     } catch (error) {
       console.error("Error adding task:", error);
-      // Optionally, set an error state here to display to the user
     } finally {
       setLoading(false);
     }
@@ -79,7 +78,6 @@ const NewTask = () => {
         Add New Task
       </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Title Field */}
         <div>
           <label
             htmlFor="title"
@@ -97,7 +95,6 @@ const NewTask = () => {
             className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
-        {/* Description Field */}
         <div>
           <label
             htmlFor="description"
@@ -115,7 +112,6 @@ const NewTask = () => {
             rows="4"
           ></textarea>
         </div>
-        {/* Due Date Field */}
         <div>
           <label
             htmlFor="dueDate"
@@ -132,7 +128,7 @@ const NewTask = () => {
             className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
-        {/* Priority Field */}
+
         <div>
           <label
             htmlFor="priority"
@@ -152,7 +148,7 @@ const NewTask = () => {
             <option value="High">High</option>
           </select>
         </div>
-        {/* Location Field */}
+
         <div>
           <label
             htmlFor="location"
@@ -169,7 +165,25 @@ const NewTask = () => {
             className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
         </div>
-        {/* Submit Button */}
+
+        <div>
+          <label
+            htmlFor="status"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Status
+          </label>
+          <select
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+            className="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+
         <button
           type="submit"
           disabled={loading}

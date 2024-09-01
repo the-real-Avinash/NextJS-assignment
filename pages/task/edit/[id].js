@@ -8,18 +8,19 @@ const EditTask = () => {
   const { id } = router.query;
   const dispatch = useDispatch();
 
-  // Fetch the task details from the Redux store
+
   const task = useSelector((state) => state.tasks.selectedTask);
   const taskStatus = useSelector((state) => state.tasks.status);
   const error = useSelector((state) => state.tasks.error);
 
-  // Initialize form state with task details
+
   const [form, setForm] = useState({
     title: "",
     description: "",
     dueDate: "",
     priority: "Low",
     location: "",
+    status: "pending", 
   });
 
   useEffect(() => {
@@ -36,6 +37,7 @@ const EditTask = () => {
         dueDate: task.dueDate || "",
         priority: task.priority || "Low",
         location: task.location || "",
+        status: task.status || "pending", // Initialize status from task
       });
     }
   }, [task]);
@@ -150,6 +152,21 @@ const EditTask = () => {
             onChange={handleChange}
             className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+        <div>
+          <label htmlFor="status" className="block text-gray-700 font-semibold">
+            Status
+          </label>
+          <select
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+            required
+            className="w-full p-3 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+          </select>
         </div>
         <button
           type="submit"

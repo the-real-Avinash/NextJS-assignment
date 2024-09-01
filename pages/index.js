@@ -8,7 +8,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const { tasks, status, error } = useSelector((state) => state.tasks);
 
-  // State for managing modal visibility and selected task to delete
+  
   const [showModal, setShowModal] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
 
@@ -36,6 +36,17 @@ const Home = () => {
     setShowModal(false);
   };
 
+  const getTaskCardStyle = (status) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-100 border-green-300";
+      case "pending":
+        return "bg-yellow-100 border-yellow-300";
+      default:
+        return "bg-white border-gray-300";
+    }
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Task List</h1>
@@ -58,7 +69,10 @@ const Home = () => {
       {status === "succeeded" && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {tasks.map((task) => (
-            <div key={task._id} className="bg-white shadow-md rounded p-4">
+            <div
+              key={task._id}
+              className={`border rounded p-4 ${getTaskCardStyle(task.status)}`}
+            >
               <h2 className="text-xl font-semibold">{task.title}</h2>
               <p className="text-gray-700">{task.description}</p>
               <div className="mt-2 flex justify-between items-center">
