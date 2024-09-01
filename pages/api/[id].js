@@ -39,6 +39,30 @@ export default async function handler(req, res) {
       }
       break;
 
+    case "PATCH":
+      try {
+        const { status } = req.body;
+
+        if (!status) {
+          return res.status(400).json({ message: "Task status is required" });
+        }
+
+        const updatedTask = await Task.findByIdAndUpdate(
+          id,
+          { status },
+          { new: true }
+        );
+
+        if (!updatedTask) {
+          return res.status(404).json({ message: "Task not found" });
+        }
+
+        res.status(200).json({ success: true, data: updatedTask });
+      } catch (error) {
+        res.status(500).json({ message: error.message });
+      }
+      break;
+
     case "DELETE":
       try {
         const deletedTask = await Task.findByIdAndDelete(id);
