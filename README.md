@@ -1,3 +1,4 @@
+Here is recorded video for reference - https://www.loom.com/share/329d9855ce1d424e8d65db2364ff3340
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
